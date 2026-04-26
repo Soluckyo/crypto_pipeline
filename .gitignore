@@ -1,0 +1,4 @@
+.DS_Store
+app/config.py
+/app/schemas/__pycache__
+/app/utils/__pycache__
