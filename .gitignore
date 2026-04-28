@@ -2,3 +2,5 @@
 app/config.py
 /app/schemas/__pycache__
 /app/utils/__pycache__
+.env
+*.pyc
