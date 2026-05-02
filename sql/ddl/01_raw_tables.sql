@@ -2,7 +2,7 @@ create schema if not exists raw;
 
 create table if not exists raw.crypto_listings(
 	id serial primary key,
-	raw_data JSNOB not null,
+	raw_data JSONB not null,
 	validation_status varchar(20) default 'pending',
 	validation_error text ,
 	loaded_at timestamp default now(),

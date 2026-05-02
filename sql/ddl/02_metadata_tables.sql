@@ -4,7 +4,7 @@ create table if not exists public.pipeline_metadata(
 	last_loaded_at timestamp,
 	last_loaded_id timestamp,
 	status varchar(20) default 'pending',
-	rows_loaded integer dfault now(),
+	rows_loaded integer default 0,
 	errors_message text,
 	updated_at timestamp default now()
 	);
