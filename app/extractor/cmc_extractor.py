@@ -1,6 +1,6 @@
 import requests
 from typing import Dict, Any, List
-from logger import get_logger
+from app.logger import get_logger
 import os
 import time
 from dotenv import load_dotenv
