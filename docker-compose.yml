@@ -3,6 +3,8 @@ services:
   postgres:
     image: postgres:15
     container_name: crypto_postgres_c
+    networks:
+      - crypto_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
@@ -23,6 +25,8 @@ services:
   airflow-init:
     image: apache/airflow:2.9.0
     container_name: airflow-init_crypto
+    networks:
+      - crypto_network
     depends_on:
       postgres:
         condition: service_healthy
@@ -34,7 +38,7 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USER}:${DB_PASSWORD}@postgres:5432/${AIRFLOW_DB}
     volumes:
       - ./airflow/dags:/opt/airflow/dags
-      - ./app:/opt/airflow/app 
+      - ./app:/opt/airflow/app
       - ./sql:/opt/airflow/sql
     command: >
       bash -c "
@@ -45,6 +49,8 @@ services:
   airflow:
     image: apache/airflow:2.9.0
     container_name: airflow_crypto
+    networks:
+      - crypto_network
     depends_on:
       airflow-init:
         condition: service_completed_successfully
@@ -52,7 +58,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${DB_USER}:${DB_PASSWORD}@postgres:5432/${AIRFLOW_DB}
-      - PYTHONPATH=/app
+      - PYTHONPATH=/opt/airflow
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./app:/opt/airflow/app 
@@ -69,3 +75,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  crypto_network:
+    driver: bridge
