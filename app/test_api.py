@@ -1,4 +1,4 @@
-from crypto_client import fetch_listings
+from app.extractor.cmc_extractor import fetch_listings
 from logger import get_logger
 
 def test_connection():
