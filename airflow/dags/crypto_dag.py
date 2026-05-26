@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 
 deafult_args = {
     "owner": "Soluckyo",
-    "start_date": datetime.now(),
+    "start_date": datetime(2026, 5, 25),
     "retries": 1
 }
 
