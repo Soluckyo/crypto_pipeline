@@ -1,4 +1,4 @@
-from schemas.cmc_listings import Status, QuoteUsd, CryptoCurrency, ListingsResponse
+from app.schemas.cmc_listings import Status, QuoteUsd, CryptoCurrency, ListingsResponse
 from collections import namedtuple
 from datetime import datetime
 from typing import Dict, Any, List
@@ -36,7 +36,7 @@ def parse_listings_response(json_data: list) -> ListingsResponse:
         quote_obj = QuoteUsd(
                 price = quote_data.get("price", 0.0),
                 volume_24h = quote_data.get("volume_24h", 0.0),
-                volume_change_1h = quote_data.get("volume_change_1h", 0.0),
+                volume_change_24h = quote_data.get("volume_change_24h", 0.0),
                 percent_change_1h = quote_data.get("percent_change_1h", 0.0),
                 percent_change_24h = quote_data.get("percent_change_24h", 0.0),
                 percent_change_7d = quote_data.get("percent_change_7d", 0.0),

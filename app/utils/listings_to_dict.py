@@ -1,13 +1,18 @@
-from schemas.cmc_listings import Status, QuoteUsd, CryptoCurrency, ListingsResponse
+from app.schemas.cmc_listings import Status, QuoteUsd, CryptoCurrency, ListingsResponse
 from collections import namedtuple
 from datetime import datetime
 from typing import Dict, Any, List
+import json
 
 def listings_to_dict(response: ListingsResponse) -> List[Dict[str, Any]]:
     result = []
 
     for crypto in response.data:
         quote_usd = crypto.quote.get("USD", {})
+
+        platform = crypto.platform
+        if platform and isinstance(platform, dict):
+            platform = json.dumps(platform)
 
         record = {
             "coin_id": crypto.id,
@@ -32,7 +37,7 @@ def listings_to_dict(response: ListingsResponse) -> List[Dict[str, Any]]:
             "market_cap_dominance": quote_usd.market_cap_dominance,
             "fully_diluted_market_cap": quote_usd.fully_diluted_market_cap,
             "tags": crypto.tags,
-            "platform": crypto.platform 
+            "platform": platform
         }
         result.append(record)
     return result

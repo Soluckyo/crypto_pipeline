@@ -1,18 +1,20 @@
 from app.logger import get_logger
 from typing import Optional
-from utils.parse import parse_listings_response
-from utils.listings_to_dict import listings_to_dict
+from app.utils.parse import parse_listings_response
+from app.utils.listings_to_dict import listings_to_dict
 from app.extractor.stg_extractor import get_latest_raw_listings, get_raw_listings_by_id
-from loader.load_stg import insert_coin_snapshot
-from loader.load_raw import update_metadata
+from app.loader.load_stg import insert_coin_snapshot
+from app.loader.load_raw import update_metadata
 
 logger = get_logger(__name__)
 
 def run_stg_pipeline(raw_id: Optional[int] = None) -> dict:
 
     if raw_id:
+        logger.info(f"Запускаем get_raw_listings_by_id с id {raw_id}")
         raw_record = get_raw_listings_by_id(raw_id)
     else:
+        logger.info("Запускаем get_latest_raw_listings")
         raw_record = get_latest_raw_listings()
 
     if not raw_record:
@@ -22,10 +24,13 @@ def run_stg_pipeline(raw_id: Optional[int] = None) -> dict:
 
     raw_id = raw_record["id"]
     
+    logger.info("Переходим к парсингу строки")
     parsed = parse_listings_response(raw_record["raw_data"])
 
+    logger.info("Преобразуем в словарь")
     records = listings_to_dict(parsed)
 
+    logger.info("Вставляем данные в БД")
     inserted_count = insert_coin_snapshot(records, raw_id)
 
     update_metadata(

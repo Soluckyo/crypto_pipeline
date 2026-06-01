@@ -14,7 +14,7 @@ class Status:
 class QuoteUsd:
     price: float
     volume_24h: float
-    volume_change_1h: float
+    volume_change_24h: float
     percent_change_1h: float
     percent_change_24h: float
     percent_change_7d: float
