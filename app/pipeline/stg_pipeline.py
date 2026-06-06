@@ -5,6 +5,8 @@ from app.utils.listings_to_dict import listings_to_dict
 from app.extractor.stg_extractor import get_latest_raw_listings, get_raw_listings_by_id
 from app.loader.load_stg import insert_coin_snapshot
 from app.loader.load_raw import update_metadata
+from app.utils.cleaners import clean_coin_records
+
 
 logger = get_logger(__name__)
 
@@ -30,8 +32,11 @@ def run_stg_pipeline(raw_id: Optional[int] = None) -> dict:
     logger.info("Преобразуем в словарь")
     records = listings_to_dict(parsed)
 
+    logger.info("Очищаем данные")
+    clean_records = clean_coin_records(records=records, method='python')
+
     logger.info("Вставляем данные в БД")
-    inserted_count = insert_coin_snapshot(records, raw_id)
+    inserted_count = insert_coin_snapshot(clean_records, raw_id)
 
     update_metadata(
         table_name="stg.coin_snapshot",
