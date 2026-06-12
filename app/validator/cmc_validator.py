@@ -5,9 +5,9 @@ logger = get_logger(__name__)
 
 def validate_listings_response(response_data: dict) -> tuple[bool, str|None]:
     # Проверяем:
-    # - наличие status и error_code == 0
-    # - наличие data
-    # - data не пустой список
+    # наличие status и error_code == 0
+    # наличие data
+    # data не пустой список
 
     is_valid = False
     status = response_data.get("status", {})
