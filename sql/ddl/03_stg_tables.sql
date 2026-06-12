@@ -31,3 +31,6 @@ CREATE TABLE IF NOT EXISTS stg.coin_snapshot (
 
 CREATE INDEX idx_stg_coin_snapshot_coin_id ON stg.coin_snapshot(coin_id);
 CREATE INDEX idx_stg_coin_snapshot_extracted_at ON stg.coin_snapshot(extracted_at);
+
+
+CREATE UNIQUE INDEX idx_stg_unique ON stg.coin_snapshot (coin_id, last_updated);
