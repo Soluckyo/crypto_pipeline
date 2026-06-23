@@ -33,6 +33,7 @@ def insert_coin_snapshot(records: List[Dict[str, Any]], raw_id: int) -> int:
             sql = """
                     INSERT INTO stg.coin_snapshot({})
                     VALUES %s
+                    ON CONFLICT(coin_id, last_updated) DO NOTHING;
                 """.format(', '.join(columns))
             
             execute_values(cur, sql, values)
