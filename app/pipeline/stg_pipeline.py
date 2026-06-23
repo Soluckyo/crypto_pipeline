@@ -33,7 +33,7 @@ def run_stg_pipeline(raw_id: Optional[int] = None) -> dict:
     records = listings_to_dict(parsed)
 
     logger.info("Очищаем данные")
-    clean_records = clean_coin_records(records=records, method='python')
+    clean_records = clean_coin_records(records=records, method='python', raw_id=raw_id)
 
     logger.info("Вставляем данные в БД")
     inserted_count = insert_coin_snapshot(clean_records, raw_id)
