@@ -32,11 +32,11 @@ def log_anomaly(
                 """
             
             cursor.execute(sql,
-                           anomaly_type, severity, coin_id, symbol, field_name, expected_value, actual_value, raw_id, stg_id, message)
+                           (anomaly_type, severity, coin_id, symbol, field_name, expected_value, actual_value, raw_id, stg_id, message))
             conn.commit()
             inserted_id = cursor.fetchone()[0]
-
             logger.info(f"Данные сохранены в public.anomaly_log с ID {inserted_id}")
+            return inserted_id
     except Exception as e:    
         conn.rollback()
         logger.error(f"Возникла ошибка при сохранении: {e}")
