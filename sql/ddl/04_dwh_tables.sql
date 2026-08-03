@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS dwh.dim_cryptocurrency(
 	
 CREATE INDEX idx_dim_coin_id ON dwh.dim_cryptocurrency(coin_id);
 CREATE INDEX idx_dim_is_current ON dwh.dim_cryptocurrency(coin_id) WHERE is_current = TRUE;
+CREATE INDEX idx_dim_is_curr ON dwh.dim_cryptocurrency(is_current) WHERE is_current = TRUE;
 CREATE INDEX idx_dim_valid ON dwh.dim_cryptocurrency(valid_from, valid_to);
 
 COMMENT ON TABLE dwh.dim_cryptocurrency IS 'SCD Type 2 таблица с историей изменений криптовалют';
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS dwh.fact_market_snapshot(
 CREATE INDEX idx_fact_dim_id ON dwh.fact_market_snapshot(id_cryptocurrency);
 CREATE INDEX idx_extracted ON dwh.fact_market_snapshot(extracted_at);
 CREATE INDEX idx_last_updated ON dwh.fact_market_snapshot(last_updated);
+CREATE INDEX idx_id_date ON dwh.fact_market_snapshot(id_date);
 
 COMMENT ON TABLE dwh.fact_market_snapshot IS 'Cнимки рыночных показателей криптовалюты';
 	
