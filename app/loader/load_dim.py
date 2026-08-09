@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Dict
 from app.logger import get_logger
 from app.db import get_connection, release_connection
-from psycopg2.extras import execute_values
 from typing import Optional
 
 logger = get_logger(__name__)

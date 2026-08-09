@@ -71,7 +71,7 @@ def insert_dim_date(dates: List[Dict]) -> int:
             return len(values)
     except Exception as e:
         conn.rollback()
-        logger.error(f"Возникла ошибка при вставке: {e}")
+        logger.error(f"Возникла ошибка при вставке в таблицу dwh.dim_date: {e}")
         raise
     finally:
         release_connection(conn)
