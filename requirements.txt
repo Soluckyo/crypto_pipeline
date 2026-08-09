@@ -1,0 +1,10 @@
+# Основные зависимости
+requests==2.32.5
+psycopg2-binary==2.9.11
+python-dotenv==1.2.2
+
+# Для Airflow
+apache-airflow==2.9.0
+
+# Для дат и праздников
+holidays-ru==0.1
