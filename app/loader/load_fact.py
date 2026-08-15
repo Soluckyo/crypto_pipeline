@@ -16,7 +16,8 @@ def prepare_fact_records(stg_records: List[Dict], dim_map: Dict[int, int]) -> Li
         'percent_change_1h', 'percent_change_24h', 'percent_change_7d',
         'percent_change_30d', 'num_market_pairs',
         'circulating_supply', 'total_supply',
-        'market_cap', 'market_cap_dominance', 'fully_diluted_market_cap'
+        'market_cap', 'market_cap_dominance', 'fully_diluted_market_cap',
+        'last_updated'
     ]
 
     for record in stg_records:
@@ -88,5 +89,6 @@ def insert_fact_market_snapshot(fact_records: List[Dict]) -> int:
     except Exception as e:
         conn.rollback()
         logger.error(f"Ошибка при вставке в dwh.fact_market_snapshot: {e}")
+        raise
     finally:
         release_connection(conn)

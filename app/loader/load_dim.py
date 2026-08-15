@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Dict
 from app.logger import get_logger
 from app.db import get_connection, release_connection
+from psycopg2.extras import execute_values
 from typing import Optional
 
 logger = get_logger(__name__)
@@ -58,25 +59,32 @@ def insert_new_dim_version(record: Dict, raw_id: int) -> int:
         'valid_from', 'valid_to', 'is_current', 'raw_id'
     ]
 
+    date_added = record.get('date_added')
+    if date_added and isinstance(date_added, str):
+        try:
+            date_added = datetime.strptime(date_added, '%Y-%m-%d').date()
+        except ValueError:
+            date_added = None
+
     values = [
-    record['coin_id'],
-    record['name'],
-    record['symbol'],
-    record['slug'],
-    record['cmc_rank'],
-    record['max_supply'],
-    record['date_added'],
-    datetime.now(),
-    None,            
-    True,
-    raw_id
-]
+        record.get('coin_id'),
+        record.get('name'),
+        record.get('symbol'),
+        record.get('slug'),
+        record.get('cmc_rank'),
+        record.get('max_supply'),
+        date_added,
+        datetime.now(),
+        None,            
+        True,
+        raw_id
+    ]
 
     try:
         with conn.cursor() as cur:
             sql = """
                      INSERT INTO dwh.dim_cryptocurrency({})
-                     VALUES (%s)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                      RETURNING id;
                   """.format(', '.join(columns))
             
@@ -87,7 +95,7 @@ def insert_new_dim_version(record: Dict, raw_id: int) -> int:
             return inserted_id
     except Exception as e:
         conn.rollback()
-        logger.error("Ошибка при добавлении новой версии монеты в dwh.dim_cryptocurrency: {e}")
+        logger.error(f"Ошибка при добавлении новой версии монеты в dwh.dim_cryptocurrency: {e}")
         raise
     finally:
         release_connection(conn)
@@ -123,6 +131,7 @@ def update_dim_cryptocurrency(stg_records: List[Dict], raw_id: int) -> Dict:
         current = get_current_dim_version(coin_id)
 
         if not current:
+            logger.info('Нет актуальной монеты поэтому добавляем текущую')
             new_id = insert_new_dim_version(record, raw_id)
             statistics["inserted"] += 1
             statistics['dim_map'][coin_id] = new_id

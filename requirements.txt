@@ -8,3 +8,7 @@ apache-airflow==2.9.0
 
 # Для дат и праздников
 holidays-ru==0.1
+
+# Для dbt (планируется для mart слоя)
+dbt-core==1.8.0
+dbt-postgres==1.8.0

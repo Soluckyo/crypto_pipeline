@@ -34,13 +34,14 @@ def get_new_stg_records(limit: int = 1000) -> List[Dict[str, Any]]:
     conn = get_connection()
 
     last_loaded_id = get_id_last_loaded_stg()
+    logger.info("Получаем id последнего загруженного stg")
 
     try:
         with conn.cursor() as cursor:
             sql = """
                     SELECT *
                       FROM stg.coin_snapshot
-                     WHERE raw_id > %s
+                     WHERE raw_id >= %s
                      ORDER BY raw_id, id
                      LIMIT %s
                   """
@@ -49,7 +50,7 @@ def get_new_stg_records(limit: int = 1000) -> List[Dict[str, Any]]:
             rows = cursor.fetchall()
 
             if not rows:
-                logger.info(f"Нет новых записей (raw_id > {last_loaded_id})")
+                logger.info(f"Нет новых записей (raw_id >= {last_loaded_id})")
                 return []
             
             columns = [desc[0] for desc in cursor.description]

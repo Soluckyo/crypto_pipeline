@@ -47,7 +47,9 @@ services:
       "
 
   airflow:
-    image: apache/airflow:2.9.0
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: airflow_crypto
     networks:
       - crypto_network

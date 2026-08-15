@@ -3,7 +3,7 @@ from typing import List, Dict
 from app.logger import get_logger
 from app.db import get_connection, release_connection
 from psycopg2.extras import execute_values
-from holidays_ru import is_holiday
+from holidays_ru import check_holiday
 
 
 logger = get_logger(__name__)
@@ -32,7 +32,7 @@ def generate_dim_date(start_date: str = '2026-01-01', end_date: str = '2036-12-3
             'quarter': (current.month-1)//3+1,
             'year': current.year,
             'is_weekend': current.isoweekday() in (6, 7),
-            'is_holiday': is_holiday(current.date())
+            'is_holiday': check_holiday(current.date())
         })
 
         current += timedelta(days=1)
