@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from app.logger import get_logger
 from app.pipeline.raw_pipeline import run_raw_pipeline
 from app.pipeline.stg_pipeline import run_stg_pipeline
+from app.pipeline.dwh_pipeline import run_dwh_pipeline
 from airflow.models.param import Param
 
 
@@ -24,6 +25,10 @@ def run_stg_pipeline_wrappers(**context):
     logger.info(f"Запуск run_stg_pipeline с id {raw_id}")
     return run_stg_pipeline(raw_id=raw_id)
 
+def run_dwh_pipeline_wrappers():
+    run_dwh_pipeline()
+    logger.info("Запуск run_dwh_pipeline")
+
 default_args = {
     "owner": "Soluckyo",
     "start_date": datetime(2026, 5, 25),
@@ -35,7 +40,8 @@ with DAG(
     default_args = default_args,
     params={'raw_id': Param(None, description="ID записи в raw.crypto_listings")},
     schedule_interval = timedelta(minutes=5),
-    catchup = False
+    catchup = False,
+    max_active_runs = 1,
 ) as dag:
     
     raw = PythonOperator(
@@ -49,4 +55,9 @@ with DAG(
         python_callable = run_stg_pipeline_wrappers
     )
 
-raw >> stg
+    dwh = PythonOperator(
+        task_id = "load_dwh",
+        python_callable = run_dwh_pipeline_wrappers
+    )
+
+raw >> stg >> dwh
