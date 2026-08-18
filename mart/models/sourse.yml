@@ -1,0 +1,13 @@
+version: 1
+
+sourse: 
+  - name: dwh
+    schema: dwh
+    tables: 
+      - name: dim_cryptocurrency
+        description: Таблица с историей изменения значений криптовалюты (SCD Type 2)
+      - name: dim_date
+        description: Таблица с датами
+      - name: fact_market_snapshot
+        description: Таблица с рыночными показателями монеты на каждый момент времени
+         
