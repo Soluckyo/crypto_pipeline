@@ -5,4 +5,9 @@ app/config.py
 .env
 *.pyc
 mart/profiles.yml
+logs/dbt.log
 *.log
+/mart/target
+mart/target/graph_summary.json
+mart/target/manifest.json
+mart/target/run_results.json
