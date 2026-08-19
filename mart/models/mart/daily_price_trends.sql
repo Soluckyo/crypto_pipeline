@@ -1,7 +1,6 @@
 {{
     config(
         materialized='table',
-        schema='mart',
         alias='daily_price_trends'
     )
 }}
@@ -22,7 +21,7 @@ FROM {{ source('dwh', 'fact_market_snapshot') }} f
 JOIN {{ source('dwh', 'dim_cryptocurrency') }} c 
     ON f.id_cryptocurrency = c.id
 JOIN {{ source('dwh', 'dim_date') }} d 
-    ON f.date_sk = d.date_sk
+    ON f.id_date = d.id_date
 WHERE d.full_date >= CURRENT_DATE - INTERVAL '7 days'
   AND c.is_current = TRUE
 ORDER BY c.symbol, d.full_date

@@ -1,6 +1,6 @@
 version: 1
 
-sourse: 
+sources: 
   - name: dwh
     schema: dwh
     tables: 
@@ -10,4 +10,3 @@ sourse:
         description: Таблица с датами
       - name: fact_market_snapshot
         description: Таблица с рыночными показателями монеты на каждый момент времени
-         
