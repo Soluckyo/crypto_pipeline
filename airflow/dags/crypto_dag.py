@@ -1,11 +1,15 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.models.param import Param
+from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 from app.logger import get_logger
+from app.loader.load_raw import update_metadata
+from app.db import get_connection, release_connection
 from app.pipeline.raw_pipeline import run_raw_pipeline
 from app.pipeline.stg_pipeline import run_stg_pipeline
 from app.pipeline.dwh_pipeline import run_dwh_pipeline
-from airflow.models.param import Param
+
 
 
 logger = get_logger(__name__)
@@ -28,6 +32,37 @@ def run_stg_pipeline_wrappers(**context):
 def run_dwh_pipeline_wrappers():
     run_dwh_pipeline()
     logger.info("Запуск run_dwh_pipeline")
+
+def update_marts_metadata(**context):
+    marts = [
+        'mart.top_cryptocurrencies',
+        'mart.daily_price_trends',
+        'mart.market_overview'
+    ]
+    
+    conn = get_connection()
+    try:
+        for mart in marts:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute(f"SELECT COUNT(*) FROM {mart}")
+                    count = cur.fetchone()[0]
+                
+                update_metadata(
+                    table_name=mart,
+                    status='success',
+                    rows_loaded=count,
+                    last_loaded_id=None
+                )
+            except Exception as e:
+                update_metadata(
+                    table_name=mart,
+                    status='failed',
+                    error_message=str(e),
+                    rows_loaded=0
+                )
+    finally:
+        release_connection(conn)
 
 default_args = {
     "owner": "Soluckyo",
@@ -60,4 +95,16 @@ with DAG(
         python_callable = run_dwh_pipeline_wrappers
     )
 
-raw >> stg >> dwh
+    mart = BashOperator(
+        task_id = "load_mart",
+        bash_command = 'cd /opt/airflow/mart && dbt run --profiles-dir .',
+        dag=dag
+    )
+
+    update_marts_meta = PythonOperator(
+        task_id='update_mart_metadata',
+        python_callable=update_marts_metadata,
+        dag=dag,
+    )
+
+raw >> stg >> dwh >> mart >> update_marts_meta
