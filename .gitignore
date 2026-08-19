@@ -4,3 +4,6 @@ app/config.py
 /app/utils/__pycache__
 .env
 *.pyc
+mart/profiles.yml
+logs/dbt.log
+*.log
